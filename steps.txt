@@ -1,0 +1,23 @@
+cd /home/vyatta/work/bmv2/targets/simple_router
+
+p4c-bmv2 --json simple_routing.json simple_router.p4
+
+cd /home/vyatta/work/bmv2/mininet
+
+sudo python 1sw_demo.py --behavioral-exe ../targets/simple_router/simple_router --json ../targets/simple_router/simple_routing.json
+
+cd /home/vyatta/work/bmv2/targets/simple_router
+
+./runtime_CLI < commands.txt
+
+./runtime_CLI
+
+table_add p4pf_ip p4dropIp 10.0.1.10 => 0.0.0.0
+table_delete p4pf_ip 0
+
+h1 python -m SimpleHTTPServer 80 &
+h2 wget -O - h1
+h1 kill %python
+
+table_add p4pf_port p4drop 80 => 0
+table_delete p4pf_port 0
